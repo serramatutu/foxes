@@ -4,12 +4,25 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "npm",
-            "script": "test",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            }
+            "command": "npm",
+            "label": "install",
+            "group": "build",
+
+            "args": ["install", "info"]
+        },
+        {
+            "command": "npm",
+            "label": "test current",
+            "group": "test",
+
+            "args": ["test", "${file}"]
+        },
+        {
+            "command": "npm",
+            "label": "test all",
+            "group": "test",
+
+            "args": ["test"]
         }
     ]
 }

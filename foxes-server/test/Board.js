@@ -2,7 +2,7 @@ var assert = require('assert');
 var Board = require('./../core/Board');
 
 describe('Board', function() {
-    var board = new Board(7);
+    var board = new Board(4);
 
     describe('#at()', function() {
         it('should make correct usage of the internal array indexes', function() {
