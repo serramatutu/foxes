@@ -1,3 +1,5 @@
+const Tile = require('./Tile');
+
 class Board {
     constructor(size) {
         this._size = size;
@@ -19,15 +21,18 @@ class Board {
         return this._array[this._getShiftedX(x, y)][y];
     }
 
-    insert(elem, x, y) {
+    insert(x, y, elem) {
         this._array[this._getShiftedX(x, y)][y] = elem;
     }
 
     _getShiftedX(x, y) {
-        return y < this.slide ? x - (this.slide - y) : x;
+        if (y < this.shift)
+            return x - (this.shift - y);
+
+        return x;
     }
 
-    get slide() {
+    get shift() {
         return Math.floor(this.diagonal/2);
     }
 
