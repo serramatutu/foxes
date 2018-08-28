@@ -1,17 +1,12 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-
-var usersRouter = require('./routes/users');
 
 var app = express();
-
-app.use(logger('dev'));
+global.app = app;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(require('./middleware/serve-metadata'));
 
 // setup routes
 app.use('/', require('./routes/index'));
