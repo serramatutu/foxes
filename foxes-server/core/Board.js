@@ -17,6 +17,10 @@ class Board {
         return this._array[x - Math.floor(this.diagonal/2)][y];
     }
 
+    insert(elem, x, y) {
+        this._array[x - Math.floor(this.diagonal/2)][y] = elem;
+    }
+
     get diagonal() {
         return this._diagonal;
     }
