@@ -1,57 +1,57 @@
 const buckets = require('buckets-js')
 const BoardEffect = require('./effect/BoardEffect');
 const InvalidArgumentError = require('../Errors').InvalidArgumentError;
-const Point = require('../util/Point');
+const HexagonGrid = require('./HexagonGrid');
+
+function setFactory() {
+    return new buckets.Set();
+}
 
 class EffectBoard {
-    constructor(size) {
-        this._size = size;
-        this._diagonal = size * 2 - 1;
-
-        this._tiles = new Array(this.diagonal);
-        for (let i=0; i<this.diagonal; i++) {
-            var currentSize = i < this.diagonal/2 
-                ? size + i 
-                : this.diagonal - i + Math.floor(this.diagonal/2);
-            this._tiles[i] = new Array(currentSize);
-
-            for (let j=0; j<currentSize; j++)
-                this._tiles[i][j] = new buckets.Set();
-        }
-
+    constructor(gridsize) {
+        this._grid = new HexagonGrid(gridsize, setFactory);
         this._activeEffects = new buckets.Set();
     }
 
-    at(x, y) {
-        var shiftedX = this._getShiftedX(x, y);
-        if (shiftedX < 0 || y < 0 || 
-            y >= this._tiles.length || shiftedX >= this._tiles[y].length)
-            throw new InvalidArgumentError('invalid board index');
-
-        return this._tiles[shiftedX][y];
-    }
-
+    /**
+     * Inserts an effect at the specified board position
+     * @param {number} x the tile X coordinate
+     * @param {number} y the tile Y coordinate
+     * @param {BoardEffect} effect the inserted effect
+     */
     insert(x, y, effect) {
         if (!(effect instanceof BoardEffect))
-            throw new InvalidArgumentError('object inserted in board must be an effect');
+            throw new InvalidArgumentError('object inserted into EffectBoard should be BoardEffect instance');
 
+        this._grid.at(x, y).add(effect);
         this._activeEffects.add(effect);
         effect.bind(x, y);
-        this.at(x, y).add(effect);
     }
 
+    /**
+     * Removes an effect from a specific tile of the board
+     * @param {number} x the tile X coordinate
+     * @param {number} y the tile Y coordinate
+     * @param {BoardEffect} effect the effect to be removed
+     * @returns {boolean} whether the effect was removed from the board
+     */
     remove(x, y, effect) {        
         if (!this._activeEffects.contains(effect))
             return false;
 
+        this._grid.at(x, y).remove(effect);
         effect.unbind(x, y);
         if (!effect.active)
             this._activeEffects.remove(effect);
 
-        this.at(x, y).remove(effect);
         return true;
     }
 
+    /**
+     * Clears a specific tile from all effects
+     * @param {number} x the tile X coordinate
+     * @param {number} y the tile Y coordinate
+     */
     clear(x, y) {
         this.at(x, y).forEach((effect) => {
             effect.unbind(shiftedX, y);
@@ -62,23 +62,8 @@ class EffectBoard {
         this.at(x, y).clear();
     }
 
-    _getShiftedX(x, y) {
-        if (y < this._shift)
-            return x - (this._shift - y);
-
-        return x;
-    }
-
-    get _shift() {
-        return Math.floor(this.diagonal/2);
-    }
-
-    get diagonal() {
-        return this._diagonal;
-    }
-
     get size() {
-        return this._size
+        return this._grid.size
     }
 }
 

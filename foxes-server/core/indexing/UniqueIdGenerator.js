@@ -7,7 +7,7 @@ class UniqueIdGenerator {
     }
 
     /**
-     * Generates a new id based on the prefix
+     * Generates a new ID based on the prefix
      */
     generate(tags) {
         var id = "";

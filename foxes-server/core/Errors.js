@@ -9,6 +9,9 @@ class ExtendableError extends Error {
     }
 }    
 
+/**
+ * Thrown when an argument passed to a function is invalid due to its type or value
+ */
 class InvalidArgumentError extends ExtendableError {};
 
 module.exports = {
