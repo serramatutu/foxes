@@ -7,7 +7,7 @@
             "request": "launch",
             "name": "Launch Program",
             "program": "${workspaceFolder}/bin/www"
-        }, 
+        },
         {
             "type": "node",
             "request": "launch",
@@ -22,6 +22,6 @@
                 "${workspaceFolder}/test"
             ],
             "internalConsoleOptions": "openOnSessionStart"
-        }
+        },
     ]
 }
