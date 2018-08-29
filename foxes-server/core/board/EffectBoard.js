@@ -1,15 +1,16 @@
 const buckets = require('buckets-js')
 const BoardEffect = require('./effect/BoardEffect');
-const InvalidArgumentError = require('../Errors').InvalidArgumentError;
 const HexagonGrid = require('./HexagonGrid');
+const Tile = require('./Tile');
+const InvalidArgumentError = require('../Errors').InvalidArgumentError;
 
-function setFactory() {
-    return new buckets.Set();
+function tileFactory(x, y) {
+    return new Tile(x, y);
 }
 
 class EffectBoard {
     constructor(gridsize) {
-        this._grid = new HexagonGrid(gridsize, setFactory);
+        this._grid = new HexagonGrid(gridsize, tileFactory);
         this._activeEffects = new buckets.Set();
     }
 
@@ -21,11 +22,11 @@ class EffectBoard {
      */
     insert(x, y, effect) {
         if (!(effect instanceof BoardEffect))
-            throw new InvalidArgumentError('object inserted into EffectBoard should be BoardEffect instance');
+            throw new InvalidArgumentError('object inserted into Tile should be BoardEffect instance');
 
         this._grid.at(x, y).add(effect);
         this._activeEffects.add(effect);
-        effect.bind(x, y);
+        effect.bind(this._grid.at(x, y));
     }
 
     /**
@@ -40,7 +41,7 @@ class EffectBoard {
             return false;
 
         this._grid.at(x, y).remove(effect);
-        effect.unbind(x, y);
+        effect.unbind(this._grid.at(x, y));
         if (!effect.active)
             this._activeEffects.remove(effect);
 
@@ -54,7 +55,7 @@ class EffectBoard {
      */
     clear(x, y) {
         this.at(x, y).forEach((effect) => {
-            effect.unbind(shiftedX, y);
+            effect.unbind(this._grid.at(x, y));
             if (!effect.active)
                 this._activeEffects.remove(effect);
         });

@@ -14,6 +14,12 @@ class ExtendableError extends Error {
  */
 class InvalidArgumentError extends ExtendableError {};
 
+/**
+ * Thrown when a method is yet to be implemented.
+ */
+class NotImplementedError extends ExtendableError {};
+
 module.exports = {
-    InvalidArgumentError
+    InvalidArgumentError,
+    NotImplementedError
 };
