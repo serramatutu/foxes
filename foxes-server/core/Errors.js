@@ -1,4 +1,4 @@
-class _ExtendableError extends Error {
+class ExtendableError extends Error {
     constructor(message) {
         super(message);
         this.name = this.constructor.name;
@@ -9,7 +9,7 @@ class _ExtendableError extends Error {
     }
 }    
 
-class InvalidArgumentError extends _ExtendableError {};
+class InvalidArgumentError extends ExtendableError {};
 
 module.exports = {
     InvalidArgumentError
