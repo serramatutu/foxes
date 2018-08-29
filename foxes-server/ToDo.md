@@ -1,4 +1,3 @@
 # ToDo list
 
-- serve version through all API resource calls
-- id generator for creating progressively specific IDs
+- Game class with ID generator and board management

@@ -42,7 +42,7 @@ describe('EffectBoard', function() {
             board.insert(6, 0, effect);
             board.insert(5, 1, effect);
 
-            assert.deepStrictEqual(new Set([new Point(6, 0), new Point(5, 1)]), new Set(board.getTilesAffected(effect)));
+            assert.deepStrictEqual(new Set([new Point(6, 0), new Point(5, 1)]), new Set(effect.affectedTiles.toArray()));
         });
     });
 });

@@ -3,42 +3,6 @@ const BoardEffect = require('./effect/BoardEffect');
 const InvalidArgumentError = require('../Errors').InvalidArgumentError;
 const Point = require('../util/Point');
 
-class ActiveBoardEffect {
-    constructor(effect) {
-        this._effectObject = effect;
-        this._affectedTiles = new buckets.Set(ActiveBoardEffect._generateString);
-    }
-
-    bind(x, y) {
-        this._affectedTiles.add(new Point(x, y));
-    }
-
-    unbind(x, y) {
-        this._affectedTiles.remove(new Point(x, y));
-    }
-
-    affectsTile(x, y) {
-        return this._affectedTiles.contains(new Point(x, y));
-    }
-
-    static _generateString(point) {
-        return point.x+','+point.y;
-    }
-
-    get affectedTiles() {
-        return this._affectedTiles;
-    }
-
-    get id() {
-        return this._effectObject.id;
-    }
-
-    get active() {
-        return !this._affectedTiles.isEmpty();
-    }
-}
-
-
 class EffectBoard {
     constructor(size) {
         this._size = size;
@@ -55,7 +19,7 @@ class EffectBoard {
                 this._tiles[i][j] = new buckets.Set();
         }
 
-        this._activeEffects = new buckets.Dictionary();
+        this._activeEffects = new buckets.Set();
     }
 
     at(x, y) {
@@ -71,38 +35,28 @@ class EffectBoard {
         if (!(effect instanceof BoardEffect))
             throw new InvalidArgumentError('object inserted in board must be an effect');
 
-        if (!this._activeEffects.containsKey(effect))
-            this._activeEffects.set(effect, new ActiveBoardEffect(effect));
-        
-        this._activeEffects.get(effect).bind(x, y);
-
-        this.at(x, y).add(effect.toString());
-    }
-
-    getTilesAffected(effect) {
-        if (!this._activeEffects.containsKey(effect))
-            return [];
-
-        return this._activeEffects.get(effect).affectedTiles.toArray();
+        this._activeEffects.add(effect);
+        effect.bind(x, y);
+        this.at(x, y).add(effect);
     }
 
     remove(x, y, effect) {        
-        if (!this._activeEffects.containsKey(effect))
+        if (!this._activeEffects.contains(effect))
             return false;
 
-        this._activeEffects.get(effect).unbind(x, y);
-        if (!this._activeEffects.get(effect).active)
+        effect.unbind(x, y);
+        if (!effect.active)
             this._activeEffects.remove(effect);
 
-        this.at(x, y).remove(effect.toString());
+        this.at(x, y).remove(effect);
         return true;
     }
 
     clear(x, y) {
-        this.at(x, y).forEach((effectId) => {
-            this._activeEffects.get(effectId).unbind(shiftedX, y);
-            if (!this._activeEffects.get(effectId).active)
-                this._activeEffects.remove(effectId);
+        this.at(x, y).forEach((effect) => {
+            effect.unbind(shiftedX, y);
+            if (!effect.active)
+                this._activeEffects.remove(effect);
         });
 
         this.at(x, y).clear();
